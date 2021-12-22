@@ -40,7 +40,7 @@ def servirPorSiempre(socketTcp, listaconexiones):
     try:
         while True:
             client_conn, client_addr = socketTcp.accept()
-            print("Conectado a", client_addr)
+            print(f"Conectado a {client_addr}")
             listaconexiones.append(client_conn)
             thread_read = threading.Thread(target=recibir_datos, args=[client_conn, client_addr, barrier, lock])
             thread_read.start()
@@ -79,30 +79,30 @@ def jugador_activo(Client_conn, tablero, n):
 
 def recibir_datos(Client_conn, addr, barrier, lock):
     cur_thread = threading.current_thread()
-    print("Recibiendo datos del cliente {addr} en el {cur_thread.name}")
-    print(threading.current_thread().name,"Esperando en la barrera con {barrier.n_waiting} hilos más")
+    jugador_actual = threading.current_thread().name
+    print(f"Recibiendo datos del cliente {addr} en el {cur_thread.name}")
+    print(f"Jugador {jugador_actual} esperando en la barrera con {barrier.n_waiting} hilos más")
     jugadores_Faltantes = int(num_Conexiones) - (barrier.n_waiting + 1)
-    mensaje = "Faltan {jugadores_Faltantes} jugadores para comenzar"
+    mensaje = f"Faltan {jugadores_Faltantes} jugadores para comenzar"
     Client_conn.send(bytes(mensaje, "utf8"))
     jugador = barrier.wait()
-    print(threading.current_thread().name, "Después de la barrera", jugador)
+    print(f"Jugador actual {jugador_actual} esta despues de la barrera", jugador)
     time.sleep(1)
     Client_conn.send(bytes("Todos los jugadores se han conectado", "utf8"))
     n = randint(0, 9)
-    jugador_actual = threading.current_thread().name
     personaje_asignado = tablero[n][0]
-    print("Se le asigno a {jugador_actual} {personaje_asignado}")
+    print(f"Se le asigno a {jugador_actual} {personaje_asignado}")
     imprimir_tablero(Client_conn)
     while True:
         lock.acquire()
-        print("Turno de {jugador_actual}")
+        print(f"Turno de {jugador_actual}")
         if jugador_ganador:
-            print("Gano el jugador {ganador}")
+            print(f"Gano el jugador {ganador}")
             Client_conn.send(bytes("si", "utf8"))
-            if ganador == threading.current_thread().name:
+            if ganador == jugador_actual:
                 Client_conn.send(bytes("Ganaste la partida !", "utf8"))
             else:
-                Client_conn.send(bytes("Perdiste la partida, el ganador fue: {ganador}", "utf8"))
+                Client_conn.send(bytes(f"Perdiste la partida, el ganador fue: {ganador}", "utf8"))
             lock.release()
             break
         else:

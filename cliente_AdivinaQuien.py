@@ -27,9 +27,9 @@ def recibir_Tablero(TCPClientSocket):
             data = TCPClientSocket.recv(bufferSize)
             resp = data.decode("utf8")
             tablero[i][j] = resp
-            print("|{resp}")
+            print(f"|{resp}")
             time.sleep(0.01)    
-        print("\n{linea}")
+        print(f"\n{linea}")
     return tablero
 
 
@@ -65,21 +65,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPClientSocket:
                 try:
                     text = r.recognize_google(audio)
                     text = text.lower()
-                    print("Usted dijo: {text}")
+                    print(f"Usted dijo: {text}")
                     res = input("¿Es correcto? (s/n): ")
                 except: 
                     print("No se reconocio")
             TCPClientSocket.sendall(bytes(text, "utf8"))
             data = TCPClientSocket.recv(bufferSize)
             resp = data.decode("utf8")
-            print("El personaje {resp} tiene esa caracteristica \n")
+            print(f"El personaje {resp} tiene esa caracteristica \n")
             linea = "_______________________________________________________________________________"
             for i in range(10):
                 for j in range(6):
                     if tablero[i][0] not in personajes_bajados:
                         val = tablero[i][j]
-                        print("|{val}")
-                print("\n{linea}")
+                        print(f"|{val}")
+                print(f"\n{linea}")
     data = TCPClientSocket.recv(bufferSize)
     print(data.decode("utf8"))
     tiempo_final = time.time()
