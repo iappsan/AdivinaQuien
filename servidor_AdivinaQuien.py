@@ -23,7 +23,7 @@ tablero = [["pedro  ","negro  ","delgada ","doctor     ","hombre","adulto"],
            ["daniela","rojo   ","robusta ","cocinero   ","mujer ","adulto"]]
 
 pregunta = ""
-band_ganador = False
+jugador_ganador = False
 ganador = ""
 
 
@@ -60,7 +60,7 @@ def gestion_conexiones(listaconexiones):
 
 
 def jugador_activo(Client_conn, tablero, n):
-    global pregunta, band_ganador, ganador
+    global pregunta, jugador_ganador, ganador
     Client_conn.send(bytes("Es tu turno", "utf8"))
 
     data = Client_conn.recv(bufferSize)
@@ -73,7 +73,7 @@ def jugador_activo(Client_conn, tablero, n):
     Client_conn.send(bytes(band, "utf8"))
 
     if tablero[n][0].lower().strip() == pregunta:
-        band_ganador = True
+        jugador_ganador = True
         ganador = threading.current_thread().name
 
 
@@ -96,7 +96,7 @@ def recibir_datos(Client_conn, addr, barrier, lock):
     while True:
         lock.acquire()
         print("Turno de {jugador_actual}")
-        if band_ganador:
+        if jugador_ganador:
             print("Gano el jugador {ganador}")
             Client_conn.send(bytes("si", "utf8"))
             if ganador == threading.current_thread().name:
