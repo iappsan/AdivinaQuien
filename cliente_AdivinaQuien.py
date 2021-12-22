@@ -27,7 +27,7 @@ def recibir_Tablero(TCPClientSocket):
             data = TCPClientSocket.recv(bufferSize)
             resp = data.decode("utf8")
             tablero[i][j] = resp
-            print(f"|{resp}")
+            print(f"|{resp}",end = "\t")
             time.sleep(0.01)    
         print(f"\n{linea}")
     return tablero
@@ -78,7 +78,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPClientSocket:
                 for j in range(6):
                     if tablero[i][0] not in personajes_bajados:
                         val = tablero[i][j]
-                        print(f"|{val}")
+                        print(f"|{val}",end = "\t")
                 print(f"\n{linea}")
     data = TCPClientSocket.recv(bufferSize)
     print(data.decode("utf8"))
