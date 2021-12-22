@@ -7,7 +7,7 @@ bufferSize = 1024
 
 
 r = sr.Recognizer()
-
+print("teodio")
 
 def recibir_Tablero(TCPClientSocket):
     linea = "_______________________________________________________________________________"
