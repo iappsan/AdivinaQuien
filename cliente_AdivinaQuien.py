@@ -38,11 +38,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPClientSocket:
     personajes_bajados = []
     tiempo_inicial = time.time()
     barrier = TCPClientSocket.recv(bufferSize)
-    string1 = barrier.decode("utf8")
-    print(string1)
+    jugadores_Comenzar = barrier.decode("utf8")
+    print(jugadores_Comenzar)
     end_barrier = TCPClientSocket.recv(bufferSize)
-    string2 = end_barrier.decode("utf8")
-    print(string2)
+    jugadores_Conectados = end_barrier.decode("utf8")
+    print(jugadores_Conectados)
     tablero = recibir_Tablero(TCPClientSocket)
     while True:
         print("Espera tu turno")

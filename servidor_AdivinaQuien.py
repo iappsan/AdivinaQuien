@@ -23,7 +23,6 @@ tablero = [["pedro  ","negro  ","delgada ","doctor     ","hombre","adulto"],
            ["daniela","rojo   ","robusta ","cocinero   ","mujer ","adulto"]]
 
 pregunta = ""
-respuesta = ""
 band_ganador = False
 ganador = ""
 
@@ -36,7 +35,7 @@ def imprimir_tablero(Client_conn):
 
 
 def servirPorSiempre(socketTcp, listaconexiones):
-    barrier = threading.Barrier(int(num_Conexiones))
+    barrier = threading.Barrier(int(num_Conexiones)) 
     lock = threading.Lock()
     try:
         while True:
@@ -52,7 +51,7 @@ def servirPorSiempre(socketTcp, listaconexiones):
 
 def gestion_conexiones(listaconexiones):
     for conn in listaconexiones:
-        if conn.fileno() == -1:
+        if conn.fileno() == -1: #Revisamos si la conexion sigue activa
             listaconexiones.remove(conn)
     # print("hilos activos:", threading.active_count())
     # print("enum", threading.enumerate())
@@ -61,7 +60,7 @@ def gestion_conexiones(listaconexiones):
 
 
 def jugador_activo(Client_conn, tablero, n):
-    global pregunta, respuesta, band_ganador, ganador
+    global pregunta, band_ganador, ganador
     Client_conn.send(bytes("Es tu turno", "utf8"))
 
     data = Client_conn.recv(bufferSize)
@@ -71,7 +70,6 @@ def jugador_activo(Client_conn, tablero, n):
     for i in range(6):
         if pregunta == tablero[n][i].lower().strip():
             band = "si"
-    respuesta = band
     Client_conn.send(bytes(band, "utf8"))
 
     if tablero[n][0].lower().strip() == pregunta:
@@ -81,27 +79,30 @@ def jugador_activo(Client_conn, tablero, n):
 
 def recibir_datos(Client_conn, addr, barrier, lock):
     cur_thread = threading.current_thread()
-    print("Recibiendo datos del cliente {} en el {}".format(addr, cur_thread.name))
-    print(threading.current_thread().name,"Esperando en la barrera con {} hilos más".format(barrier.n_waiting))
-    mensaje = "Faltan {} jugadores para comenzar".format(int(num_Conexiones) - (barrier.n_waiting + 1))
+    print("Recibiendo datos del cliente {addr} en el {cur_thread.name}")
+    print(threading.current_thread().name,"Esperando en la barrera con {barrier.n_waiting} hilos más")
+    jugadores_Faltantes = int(num_Conexiones) - (barrier.n_waiting + 1)
+    mensaje = "Faltan {jugadores_Faltantes} jugadores para comenzar"
     Client_conn.send(bytes(mensaje, "utf8"))
     jugador = barrier.wait()
     print(threading.current_thread().name, "Después de la barrera", jugador)
     time.sleep(1)
     Client_conn.send(bytes("Todos los jugadores se han conectado", "utf8"))
     n = randint(0, 9)
-    print("Se le asigno a {} {}".format(threading.current_thread().name, tablero[n][0]))
+    jugador_actual = threading.current_thread().name
+    personaje_asignado = tablero[n][0]
+    print("Se le asigno a {jugador_actual} {personaje_asignado}")
     imprimir_tablero(Client_conn)
     while True:
         lock.acquire()
-        print("Turno de " + threading.current_thread().name)
+        print("Turno de {jugador_actual}")
         if band_ganador:
-            print("gano " + ganador)
+            print("Gano el jugador {ganador}")
             Client_conn.send(bytes("si", "utf8"))
             if ganador == threading.current_thread().name:
                 Client_conn.send(bytes("Ganaste la partida !", "utf8"))
             else:
-                Client_conn.send(bytes("Perdiste la partida, el ganador fue: " + ganador, "utf8"))
+                Client_conn.send(bytes("Perdiste la partida, el ganador fue: {ganador}", "utf8"))
             lock.release()
             break
         else:
