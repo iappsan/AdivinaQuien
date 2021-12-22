@@ -3,11 +3,12 @@ import socket
 import os
 import time
 
+HOST = input("Ingrese la IP del servidor: ") 
+PORT = int(input("Ingrese el puerto del servidor: "))
 bufferSize = 1024
 
 
 r = sr.Recognizer()
-print("teodio")
 
 def recibir_Tablero(TCPClientSocket):
     linea = "_______________________________________________________________________________"
@@ -23,19 +24,16 @@ def recibir_Tablero(TCPClientSocket):
                ["","","","","",""]]
     for i in range(10):
         for j in range(6):
-            
             data = TCPClientSocket.recv(bufferSize)
             resp = data.decode("utf8")
             tablero[i][j] = resp
-            print("|" + resp, end="\t")
+            print("|{resp}")
             time.sleep(0.01)    
-        print("\n"+linea)
+        print("\n{linea}")
     return tablero
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPClientSocket:
-    HOST = input("Ingrese la IP del servidor: ") 
-    PORT = int(input("Ingrese el puerto del servidor: "))
     TCPClientSocket.connect((HOST, PORT))
     personajes_bajados = []
     tiempo_inicial = time.time()
@@ -67,21 +65,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPClientSocket:
                 try:
                     text = r.recognize_google(audio)
                     text = text.lower()
-                    print("Usted dijo: {}".format(text))
+                    print("Usted dijo: {text}")
                     res = input("¿Es correcto? (s/n): ")
                 except: 
                     print("No se reconocio")
             TCPClientSocket.sendall(bytes(text, "utf8"))
             data = TCPClientSocket.recv(bufferSize)
             resp = data.decode("utf8")
-            print("El personaje "+resp+" tiene esa caracteristica \n")
+            print("El personaje {resp} tiene esa caracteristica \n")
             linea = "_______________________________________________________________________________"
             for i in range(10):
                 for j in range(6):
                     if tablero[i][0] not in personajes_bajados:
                         val = tablero[i][j]
-                        print("|",val, end = "\t")
-                print("\n"+linea)
+                        print("|{val}")
+                print("\n{linea}")
     data = TCPClientSocket.recv(bufferSize)
     print(data.decode("utf8"))
     tiempo_final = time.time()
