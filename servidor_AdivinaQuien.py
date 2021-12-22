@@ -65,12 +65,12 @@ def jugador_activo(Client_conn, tablero, n):
 
     data = Client_conn.recv(bufferSize)
     pregunta = data.decode("utf8")
-    band = "no"
+    respuesta_Correcta = "no"
 
     for i in range(6):
         if pregunta == tablero[n][i].lower().strip():
-            band = "si"
-    Client_conn.send(bytes(band, "utf8"))
+            respuesta_Correcta = "si"
+    Client_conn.send(bytes(respuesta_Correcta, "utf8"))
 
     if tablero[n][0].lower().strip() == pregunta:
         jugador_ganador = True
