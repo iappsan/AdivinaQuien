@@ -27,8 +27,7 @@ def recibir_Tablero(TCPClientSocket):
             data = TCPClientSocket.recv(bufferSize)
             resp = data.decode("utf8")
             tablero[i][j] = resp
-            print(f"|{resp}",end = "\t")
-            time.sleep(0.01)    
+            print(f"|{resp}",end = "\t") 
         print(f"\n{linea}")
     return tablero
 
